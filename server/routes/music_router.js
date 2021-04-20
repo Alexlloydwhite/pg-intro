@@ -36,8 +36,29 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    musicLibrary.push(req.body);
-    res.sendStatus(200);
+    const song = {
+        artist: req.body.artist,
+        track: req.body.track,
+        rank: req.body.rank,
+        published: req.body.published,
+    };
+    // ensure the data is coming in from the front end!!
+    // console.log(song);
+
+    // create INSERT query fro POSTING a new record to the DB:
+    const querytext = `INSERT INTO "songs" ("rank", "track", "artist", "published")
+                            VALUES ('${song.rank}', '${song.track}', '${song.artist}', '${song.published}')
+                            RETURNING "id";`; // return ID since new record and don't have id beforehand. 
+    pool.query(querytext)
+        .then(result => {
+            console.log('New record is is: ', result);
+            res.sendStatus(201); // proper response code (in char's correct opinion.);
+            // however res.sendStatus(200); acceptable if you must.. but don't
+        })
+        .catch(err => {
+            console.log(`This didn't work. ${querytext}`, error);
+            res.sendStatus(500); 
+        });
 });
 
 module.exports = router;
