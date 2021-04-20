@@ -2,27 +2,6 @@ const express = require('express');
 const router = express.Router();
 const pool = require('./pool_router');
 
-let musicLibrary = [
-    {
-        rank: 355, 
-        artist: 'Ke$ha', 
-        track: 'Tik-Toc', 
-        published: '1/1/2009'
-    },
-    {
-        rank: 356, 
-        artist: 'Gene Autry', 
-        track: 'Rudolph, the Red-Nosed Reindeer', 
-        published: '1/1/1949'
-    },
-    {
-        rank: 357, 
-        artist: 'Oasis', 
-        track: 'Wonderwall', 
-        published: '1/1/1996'
-    }
-];
-
 router.get('/', (req, res) => {
     let queryText = 'SELECT * FROM songs;';
     pool.query(queryText)
@@ -47,9 +26,9 @@ router.post('/', (req, res) => {
 
     // create INSERT query fro POSTING a new record to the DB:
     const querytext = `INSERT INTO "songs" ("rank", "track", "artist", "published")
-                            VALUES (${song.rank}, '${song.track}', '${song.artist}', '${song.published}')
+                            VALUES ($1, $2, $3, $4)
                             RETURNING "id";`; // return ID since new record and don't have id beforehand. 
-    pool.query(querytext)
+    pool.query(querytext, [req.body.rank, req.body.track, req.body.artist, req.body.published] )
         .then(result => {
             console.log('New record is is: ', result);
             // PQ result will always have an array ([]) for the .rows property
@@ -63,5 +42,19 @@ router.post('/', (req, res) => {
             res.sendStatus(500); 
         });
 });
+
+router.delete('/:id', (req,res) => {
+    const recordToDelete = req.params.id;
+    const queryText = `DELETE FROM "songs" WHERE id=$1;`;
+    pool.query( queryText, [recordToDelete] )
+        .then(result => {
+            res.sendStatus(200);
+        })
+        .catch(error => {
+            console.log('The delete deleted our delete:', error)
+            res.sendStatus(500);
+        });
+});
+
 
 module.exports = router;

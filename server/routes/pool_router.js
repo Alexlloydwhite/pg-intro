@@ -1,8 +1,10 @@
+// const { Pool } = require('pg');
 const pg = require('pg');
+
 const Pool = pg.Pool;
 
 // set up PG to connect with the DB!
-const pool = new Pool({
+const pool = new Pool ({
     database: 'music_library',
     host: 'localhost',
     port: '5432',
@@ -13,7 +15,7 @@ const pool = new Pool({
 // .on looks familar, right? Just so we need the connecion sucreed. There are a million
 // things that can go wrong!
 // Handle CONNECTION events:
-pool.on('connect', () =>{
+pool.on('connect', () => {
     console.log('PostgreSQL connected! DoepWoot!');
 });
 // handle ERRORS from the DB:
