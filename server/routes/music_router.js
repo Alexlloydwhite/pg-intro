@@ -43,6 +43,41 @@ router.post('/', (req, res) => {
         });
 });
 
+// UPDATE
+// put /musicLibrary/4 --- updates single song;
+// req.body = { "direction": 'up'} 'up' or 'down' only options 
+// any other value int eh bdoy will thorw a 500
+router.put('/:id', (req, res) => {
+    let songId = req.params.id;
+
+    // get vote direction from the body of the req
+    let direction = req.body.direction;
+
+    let queryText = ``
+
+    if (direction === 'up' ) {
+        queryText = `UPDATE "songs" SET "rank"=rank+1 WHERE "id"=$1;`;
+    } else if (direction === 'down') {
+        queryText= `UPDATE "songs" SET "rank"=rank-1 WHERE "id"=$1;`;
+    } else {
+        res.sendStatus(500);
+        return; // end the router operations ... 
+    } 
+
+    // Send the req > DB
+    // only 1 query variable, but it still goes into an ARRAY!
+    pool.query( queryText, [songId] )
+        .then(response => {
+            console.log('song edited');
+            res.sendStatus(200);
+        })
+        // handles erors and send server error
+        .catch(error => {
+            console.log(`error making database query ${queryText}`, error);
+            res.sendStatus(500);
+        })
+});
+
 router.delete('/:id', (req,res) => {
     const recordToDelete = req.params.id;
     const queryText = `DELETE FROM "songs" WHERE id=$1;`;

@@ -2,7 +2,14 @@ $(document).ready(onReady);
 
 function onReady() {
     getMusicData();
+    // listen for add song clicks
     $('#add').on('click', postMusicData);
+    //listen for up vote clicks
+    $('#musicTableBody').on('click', '.vote-up', putUpVoteHandler)
+    // listen for down vote clicks
+    $('#musicTableBody').on('click', '.vote-down', putDownVoteHandler)
+    // listen for delete song clicks
+    $('#musicTableBody').on('click', '.delete-song', deleteSongHandler);
 }
 
 // get artist data from the server
@@ -25,13 +32,20 @@ function getMusicData() {
                     <td>${response[i].rank}</td>
                     <td>${response[i].published}</td>
                     <td>    
-                        <button type="button" class="edit-btn">Edit</button>
-                        <button type="button class="delete-btn">Delete Song</button>
+                        <button type="button" class="vote-up" data-id="${response[i].id}">
+                            Up Vote
+                        </button>
+                        <button type="button" class="vote-down" data-id="${response[i].id}">
+                            Down Vote
+                        </button>
+                        <button type="button" class="delete-song" data-id="${response[i].id}">
+                            Delete Song
+                        </button>
                     </td>
                 </tr>
             `);
             // assign key/value pair with songId into jQuery data property:
-            newRow.data('id', response[i].id);
+            // newRow.data('id', response[i].id);
             // add each song to the DOM...
             $('#musicTableBody').append(newRow);
         }
@@ -56,6 +70,40 @@ function postMusicData() {
         $('#published').val('')
         getMusicData();
     });
+}
+
+// handle the button click for voting up a song
+// passes songId and vote direction to the API PUT call
+function putUpVoteHandler(){
+    voteOnSong( $(this).data("id", "up") );
+}
+
+// handle the button clicks for voting down a song
+// Passes songId and vote direiton to API PUT call
+function putDownVoteHandler(){
+    voteOnSong( $(this).data("id", "down") );
+}
+
+// make the PUT API call and modify the vote on the song!
+function voteOnSong(songId, voteDirection) {
+    $.ajax({
+        method: 'PUT',
+        url: `/musicLibrary/${songId}`,
+        data: {
+            direction: voteDirection // use value from the function arguments in 78
+        }
+    })
+    .then(response => {
+        getMusicData();
+    })
+    .catch(error => {
+        console.log('error on vote song.', error);
+    })
+}
+
+
+function deleteSongHandler(){
+    deleteSong( $(this).data("id") )
 }
 
 function deleteSong(songId) {
