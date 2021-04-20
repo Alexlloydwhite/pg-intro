@@ -52,8 +52,13 @@ router.post('/', (req, res) => {
     pool.query(querytext)
         .then(result => {
             console.log('New record is is: ', result);
-            res.sendStatus(201); // proper response code (in char's correct opinion.);
-            // however res.sendStatus(200); acceptable if you must.. but don't
+            // PQ result will always have an array ([]) for the .rows property
+            // EVEN IF NOTHING IS RETURNED, there will be an array.
+            // If you must validate, check that the array is not empty.
+            if ( results.rows !== [] ) {
+                res.sendStatus(201); // proper response code (in char's correct opinion.);
+                // however res.sendStatus(200); acceptable if you must.. but don't
+            }
         })
         .catch(err => {
             console.log(`This didn't work. ${querytext}`, error);
