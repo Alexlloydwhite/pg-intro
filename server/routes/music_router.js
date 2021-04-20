@@ -47,7 +47,7 @@ router.post('/', (req, res) => {
 
     // create INSERT query fro POSTING a new record to the DB:
     const querytext = `INSERT INTO "songs" ("rank", "track", "artist", "published")
-                            VALUES ('${song.rank}', '${song.track}', '${song.artist}', '${song.published}')
+                            VALUES (${song.rank}, '${song.track}', '${song.artist}', '${song.published}')
                             RETURNING "id";`; // return ID since new record and don't have id beforehand. 
     pool.query(querytext)
         .then(result => {
