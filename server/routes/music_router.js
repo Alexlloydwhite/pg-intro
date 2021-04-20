@@ -1,30 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
-//source in PG
-const pg = require('pg');
-
-// set up PG to connect with the DB!
-const Pool = pg.Pool; // ALT entry: const { Pool } = require('pg.Pool)
-const pool = new Pool({
-    database: 'music_library',
-    host: 'localhost',
-    port: '5432',
-    max: 10,
-    idleTimeoutMillis: 300000,
-});
-
-// .on looks familar, right? Just so we need the connecion sucreed. There are a million
-// things that can go wrong!
-// Handle CONNECTION events:
-pool.on('connect', () =>{
-    console.log('PostgreSQL connected! DoepWoot!');
-});
-// handle ERRORS from the DB:
-pool.on('error', error => {
-    console.log('Error with postgre pool', error);    
-});
-
+const pool = require('./pool_router');
 
 let musicLibrary = [
     {
