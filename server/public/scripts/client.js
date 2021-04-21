@@ -75,13 +75,13 @@ function postMusicData() {
 // handle the button click for voting up a song
 // passes songId and vote direction to the API PUT call
 function putUpVoteHandler(){
-    voteOnSong( $(this).data("id", "up") );
+    voteOnSong( $(this).data("id"), "up" );
 }
 
 // handle the button clicks for voting down a song
 // Passes songId and vote direiton to API PUT call
 function putDownVoteHandler(){
-    voteOnSong( $(this).data("id", "down") );
+    voteOnSong( $(this).data("id"), "down" );
 }
 
 // make the PUT API call and modify the vote on the song!
